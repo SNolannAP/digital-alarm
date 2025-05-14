@@ -8,9 +8,11 @@ interface DigitalClockProps {
 }
 
 export function DigitalClock({ className }: DigitalClockProps) {
-  const [time, setTime] = useState<string>("00:00:00 AM");
+  const [time, setTime] = useState<string | null>(null);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     const updateTime = () => {
       const now = new Date();
       const hours24 = now.getHours();
@@ -21,19 +23,19 @@ export function DigitalClock({ className }: DigitalClockProps) {
       setTime(`${hours.toString().padStart(2, "0")}:${minutes}:${seconds} ${ampm}`);
     };
 
-    // Update immediately
     updateTime();
     
-    // Update every second
     const interval = setInterval(updateTime, 1000);
     
     return () => clearInterval(interval);
   }, []);
 
+  if (!mounted) return null;
+
   return (
     <div className={cn("text-center", className)}>
       <h1 className="text-6xl md:text-8xl font-bold tracking-tighter font-mono transition-all">
-        {time.match(/(\d{2}:\d{2}:\d{2}) (AM|PM)/)?.slice(1).map((part, index) => (
+        {time?.match(/(\d{2}:\d{2}:\d{2}) (AM|PM)/)?.slice(1).map((part, index) => (
           <span
             key={index}
             className={cn(

@@ -11,7 +11,7 @@ export type Alarm = {
 export type AlarmAlert = {
   alarm: Alarm;
   triggered: Date;
-  ends?: Date; // Only set if the alarm has a duration
+  ends?: Date; // Optional
 };
 
 export function createAlarm(
@@ -32,7 +32,6 @@ export function createAlarm(
 }
 
 export function formatTime(time: string): string {
-  // Convert 24h to 12h format
   const [hours, minutes] = time.split(":");
   const hour = parseInt(hours, 10);
   const ampm = hour >= 12 ? "PM" : "AM";
@@ -49,7 +48,6 @@ export function checkAlarms(alarms: Alarm[]): Alarm | null {
   return alarms.find(alarm => 
     alarm.enabled && 
     alarm.time === currentTime &&
-    // Check that we haven't already triggered this alarm in the current minute
     (now.getSeconds() < 10) // Only trigger in the first 10 seconds of the minute
   ) || null;
 }
@@ -77,6 +75,8 @@ export function formatDuration(minutes: number): string {
   return `${hours} hour${hours !== 1 ? 's' : ''} ${remainingMinutes} minute${remainingMinutes !== 1 ? 's' : ''}`;
 }
 
+let idCounter = 0;
 function generateId(): string {
-  return Math.random().toString(36).substring(2, 9);
+  idCounter += 1;
+  return `alarm-${idCounter}`;
 }

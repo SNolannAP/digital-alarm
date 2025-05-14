@@ -8,9 +8,11 @@ interface DateDisplayProps {
 }
 
 export function DateDisplay({ className }: DateDisplayProps) {
-  const [date, setDate] = useState<string>("");
+  const [date, setDate] = useState<string | null>(null);
+  const [mounted, setMounted] = useState(false);
   
   useEffect(() => {
+    setMounted(true);
     const updateDate = () => {
       const now = new Date();
       const options: Intl.DateTimeFormatOptions = { 
@@ -22,14 +24,14 @@ export function DateDisplay({ className }: DateDisplayProps) {
       setDate(now.toLocaleDateString('en-US', options));
     };
     
-    // Update immediately
     updateDate();
     
-    // Update every minute (in case we cross midnight)
     const interval = setInterval(updateDate, 60000);
     
     return () => clearInterval(interval);
   }, []);
+
+  if (!mounted) return null;
 
   return (
     <div className={cn("text-center text-muted-foreground", className)}>
